@@ -20,7 +20,7 @@ jobs:
         working-directory: src
         run: |
           cmake -B build-arm64 -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF \
-            -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 \
+            -DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_OSX_DEPLOYMENT_TARGET=12.0 -DGGML_BLAS=OFF \
             -DGGML_NATIVE=OFF -DGGML_METAL=ON -DGGML_METAL_EMBED_LIBRARY=ON \
             -DWHISPER_BUILD_TESTS=OFF -DWHISPER_BUILD_SERVER=OFF
           cmake --build build-arm64 --config Release -j 4 --target whisper-cli
@@ -29,7 +29,7 @@ jobs:
         working-directory: src
         run: |
           cmake -B build-x64 -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF \
-            -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0 \
+            -DCMAKE_OSX_ARCHITECTURES=x86_64 -DCMAKE_OSX_DEPLOYMENT_TARGET=12.0 -DGGML_BLAS=OFF \
             -DGGML_NATIVE=OFF -DGGML_METAL=OFF \
             -DGGML_AVX=ON -DGGML_AVX2=ON -DGGML_FMA=ON -DGGML_F16C=ON \
             -DWHISPER_BUILD_TESTS=OFF -DWHISPER_BUILD_SERVER=OFF
@@ -40,7 +40,7 @@ jobs:
           mkdir out
           cp src/build-arm64/bin/whisper-cli out/whisper-cli-mac-arm64
           cp src/build-x64/bin/whisper-cli out/whisper-cli-mac-x64
-          for f in out/*; do echo "== $f"; file "$f"; otool -L "$f"; done
+          for f in out/*; do echo "== $f"; file "$f"; otool -L "$f"; vtool -show-build "$f" | grep -E "minos|platform"; done
           # nada fora do sistema pode aparecer (senao nao roda no Mac do aluno)
           if otool -L out/* | grep -vE ':$|/usr/lib/|/System/Library/'; then echo "DEPENDENCIA EXTERNA!"; exit 1; fi
 
